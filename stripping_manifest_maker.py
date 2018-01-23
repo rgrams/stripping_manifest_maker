@@ -34,7 +34,7 @@ def assemble_data(options):
 	data = { "excludeLibs": [], "excludeSymbols": [], "libs": [] }
 	for opt in options:
 		# for each listed option, get its excludeLibs, excludeSymbols, and libs from 'OPTIONS' and add them to 'data'
-		if OPTIONS.has_key(opt):
+		if opt in OPTIONS:
 			optionData = OPTIONS[opt]
 			for listType in optionData.keys(): # listType = "excludeLibs", "excludeSymbols", or "libs"
 				for i in range(len(optionData[listType])):
@@ -44,7 +44,7 @@ def assemble_data(options):
 						# format flag with quotes, comma, and space, and add to list
 						data[listType].append(fs)
 		else:
-			print "ERROR - assemble_data - invalid option: " + opt
+			print("ERROR - assemble_data - invalid option: " + opt)
 	return data
 
 # All platforms except windows use the exact same flags.
@@ -68,7 +68,7 @@ def make_manifest(options):
 		pstr = '\t%s:\n%s' % (platstring, PLAT_OPEN)
 		for flagtype in ("excludeLibs", "excludeSymbols", "libs"):
 			f = data[flagtype]
-			if WINPLATFORMS.has_key(platstring):
+			if platstring in WINPLATFORMS:
 				f = windowsify_flags(data[flagtype], flagtype)
 			flaglist = "".join(f) # concatenate list of flag strings
 			flaglist = flaglist[0:-2] # remove trailing comma and space
@@ -81,7 +81,7 @@ def write_file(path, filestr):
 	f = open(path, "w")
 	f.write(filestr)
 	f.close()
-	print "...manifest file written."
+	print("...manifest file written.")
 
 class ManifestMaker(cmd.Cmd):
 
@@ -92,19 +92,19 @@ class ManifestMaker(cmd.Cmd):
 	def do_options(self, line):
 		"""options():
     Prints a list of available options."""
-		print "The available options are: "
+		print("The available options are: ")
 		for opt in OPTIONS.keys():
-			print "\t" + opt
+			print("\t" + opt)
 
 	def do_show_enabled(self, line):
 		"""show_enabled():
     Prints the list of currently enabled options."""
-		print "The currently enabled options are: "
+		print("The currently enabled options are: ")
 		if options:
 			for opt in options:
-				print "\t" + opt
+				print("\t" + opt)
 		else:
-			print "No options are currently enabled."
+			print("No options are currently enabled.")
 
 	def do_enable_option(self, opts):
 		"""enable_option(option):
@@ -113,15 +113,15 @@ class ManifestMaker(cmd.Cmd):
     See the 'options' command for a list of available options."""
 		optlist = opts.split(", ")
 		for o in optlist:
-			if OPTIONS.has_key(o):
+			if o in OPTIONS:
 				if find(options, o) is None:
 					options.append(o)
-					print "...option '%s' enabled" % (o)
+					print("...option '%s' enabled" % (o))
 				else:
-					print "...option '%s' is already enabled" % (o)
+					print("...option '%s' is already enabled" % (o))
 			else:
-				print "...invalid option: " + o
-		print "Enabled options are now: ", options
+				print("...invalid option: " + o)
+		print("Enabled options are now: ", options)
 
 	def do_disable_option(self, opts):
 		"""disable_option(option):
@@ -130,15 +130,15 @@ class ManifestMaker(cmd.Cmd):
     See the 'options' command for a list of available options."""
 		optlist = opts.split(", ")
 		for o in optlist:
-			if OPTIONS.has_key(o):
+			if o in OPTIONS:
 				if find(options, o) is not None:
 					options.remove(o)
-					print "...option %s removed." % (o)
+					print("...option %s removed." % (o))
 				else:
-					print "...option '%s' is not enabled" % (o)
+					print("...option '%s' is not enabled" % (o))
 			else:
-				print "...invalid option: " + o
-		print "Enabled options are now: ", o
+				print("...invalid option: " + o)
+		print("Enabled options are now: ", o)
 
 
 	def do_make_manifest(self, line):
@@ -148,9 +148,9 @@ class ManifestMaker(cmd.Cmd):
 		path = DEFAULT_PATH
 		if line:
 			path = line
-			print "...using specified path: " + line
+			print("...using specified path: " + line)
 		else:
-			print "...no path specified, using default path: " + DEFAULT_PATH
+			print("...no path specified, using default path: " + DEFAULT_PATH)
 		write_file(path, make_manifest(options))
 
 	def do_exit(self, line):
